@@ -1,197 +1,112 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
+const canvas = document.getElementById("gameCanvas");
+const context = canvas.getContext("2d");
 
-    // Canvas size
-    canvas.width = 600;
-    canvas.height = 400;
+const paddleWidth = 10, paddleHeight = 100;
+const ballRadius = 10;
+let upPressed = false, downPressed = false;
+let playerScore = 0, playerLives = 3;
 
-    // Basket (player)
-    const basket = {
-        x: canvas.width / 2 - 40,
-        y: canvas.height - 40,
-        width: 80,
-        height: 20,
-        speed: 5
-    };
+const player = { x: 0, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 5 };
+const computer = { x: canvas.width - paddleWidth, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 5 };
+const ball = { x: canvas.width / 2, y: canvas.height / 2, radius: ballRadius, speed: 4, dx: 4, dy: 4 };
 
-    // Donations (falling items)
-    let donations = [];
-    const donationTypes = ["💰", "📚", "🥖"]; // Coins, books, food
+function drawPaddle(x, y, width, height) {
+    context.fillStyle = "#FFF";
+    context.fillRect(x, y, width, height);
+}
 
-    // Score
-    let score = 0;
-    let missed = 0;
-    let gameRunning = true;
+function drawBall(x, y, radius) {
+    context.beginPath();
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    context.fillStyle = "#FFF";
+    context.fill();
+    context.closePath();
+}
 
-    function createDonation() {
-        if (!gameRunning) return;
-        const donation = {
-            x: Math.random() * (canvas.width - 20),
-            y: 0,
-            width: 20,
-            height: 20,
-            type: donationTypes[Math.floor(Math.random() * donationTypes.length)],
-            speed: Math.random() * 2 + 2
-        };
-        donations.push(donation);
+function movePaddle(paddle) {
+    if (upPressed && paddle.y > 0) {
+        paddle.y -= paddle.dy;
+    } else if (downPressed && paddle.y < canvas.height - paddle.height) {
+        paddle.y += paddle.dy;
+    }
+}
+
+function moveComputerPaddle() {
+    if (ball.y < computer.y + computer.height / 2) {
+        computer.y -= computer.dy;
+    } else if (ball.y > computer.y + computer.height / 2) {
+        computer.y += computer.dy;
+    }
+}
+
+function moveBall() {
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+        ball.dy *= -1;
     }
 
-    function update() {
-        if (!gameRunning) return;
-
-        // Move basket
-        if (keys["ArrowLeft"] && basket.x > 0) {
-            basket.x -= basket.speed;
-        }
-        if (keys["ArrowRight"] && basket.x + basket.width < canvas.width) {
-            basket.x += basket.speed;
-        }
-
-        // Move donations
-        for (let i = 0; i < donations.length; i++) {
-            donations[i].y += donations[i].speed;
-
-            // Check if caught
-            if (
-                donations[i].y + donations[i].height >= basket.y &&
-                donations[i].x + donations[i].width >= basket.x &&
-                donations[i].x <= basket.x + basket.width
-            ) {
-                score += 10;
-                donations.splice(i, 1);
-                i--;
-            }
-            // Check if missed
-            else if (donations[i].y > canvas.height) {
-                missed++;
-                donations.splice(i, 1);
-                i--;
-            }
-        }
-
-        // End game if too many are missed
-        if (missed >= 5) {
-            document.getElementById("message").innerText = "Game Over! You missed too many donations!";
-            gameRunning = false;
-        }
-
-        document.getElementById("score").innerText = "Score: " + score;
-        draw();
+    if (ball.x - ball.radius < player.x + player.width && ball.y > player.y && ball.y < player.y + player.height) {
+        ball.dx *= -1;
+        playerScore++;
+        document.getElementById("score").innerText = "Score: " + playerScore;
+    } else if (ball.x + ball.radius > computer.x && ball.y > computer.y && ball.y < computer.y + computer.height) {
+        ball.dx *= -1;
     }
 
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw basket
-        ctx.fillStyle = "brown";
-        ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
-
-        // Draw donations
-        ctx.font = "20px Arial";
-        for (let i = 0; i < donations.length; i++) {
-            ctx.fillText(donations[i].type, donations[i].x, donations[i].y);
+    if (ball.x - ball.radius < 0) {
+        playerLives--;
+        if (playerLives === 0) {
+            document.getElementById("message").innerText = "Game Over";
+            document.location.reload();
+        } else {
+            resetBall();
         }
+    } else if (ball.x + ball.radius > canvas.width) {
+        ball.dx *= -1;
     }
+}
 
-    function gameLoop() {
-        if (gameRunning) {
-            update();
-            requestAnimationFrame(gameLoop);
-        }
+function resetBall() {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.dx *= -1;
+}
+
+function draw() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    drawPaddle(player.x, player.y, player.width, player.height);
+    drawPaddle(computer.x, computer.y, computer.width, computer.height);
+    drawBall(ball.x, ball.y, ball.radius);
+}
+
+function update() {
+    movePaddle(player);
+    moveComputerPaddle();
+    moveBall();
+}
+
+function gameLoop() {
+    draw();
+    update();
+    requestAnimationFrame(gameLoop);
+}
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowUp") {
+        upPressed = true;
+    } else if (event.key === "ArrowDown") {
+        downPressed = true;
     }
-
-    // Move basket
-    let keys = {};
-    document.addEventListener("keydown", (event) => keys[event.key] = true);
-    document.addEventListener("keyup", (event) => keys[event.key] = false);
-
-    // Create donations every second
-    setInterval(createDonation, 1000);
-    gameLoop();
 });
 
-
-    // Background music
-    const backgroundMusic = document.getElementById("background-music");
-    backgroundMusic.volume = 0.5;
-    backgroundMusic.play();
-
-    // Key event listeners
-    document.addEventListener("keydown", (event) => keys[event.key] = true);
-    document.addEventListener("keyup", (event) => keys[event.key] = false);
-
-    function update() {
-        if (gameOver || reachedGoal) return;
-
-        // Move right
-        if (keys["ArrowRight"]) {
-            player.x += player.speed;
-        }
-
-        // Jump
-        if (keys[" "] && player.grounded) {
-            player.dy = player.jumpPower;
-            player.grounded = false;
-        }
-
-        // Apply gravity
-        player.dy += player.gravity;
-        player.y += player.dy;
-
-        // Prevent falling through the ground
-        if (player.y >= 300) {
-            player.y = 300;
-            player.dy = 0;
-            player.grounded = true;
-        }
-
-        // Start chaser when player reaches halfway
-        if (player.x > 400) {
-            chaser.speed = 2;
-        }
-
-        // Move chaser
-        if (chaser.speed > 0) {
-            chaser.x += chaser.speed;
-        }
-
-        // Check collision with chaser
-        if (chaser.x + chaser.width > player.x && chaser.x < player.x + player.width) {
-            gameOver = true;
-            alert("You were caught! Try again.");
-            location.reload();
-        }
-
-        // Check if player reaches the church
-        if (player.x > 750) {
-            reachedGoal = true;
-            alert("You made it to the church! Slovakia is safe!");
-            location.reload();
-        }
-
-        draw();
+document.addEventListener("keyup", (event) => {
+    if (event.key === "ArrowUp") {
+        upPressed = false;
+    } else if (event.key === "ArrowDown") {
+        downPressed = false;
     }
-
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw player (Slovak flag)
-        ctx.drawImage(slovakFlag, player.x, player.y, player.width, player.height);
-
-        // Draw chaser (Austria-Hungary flag)
-        if (chaser.speed > 0) {
-            ctx.drawImage(austriaHungaryFlag, chaser.x, chaser.y, chaser.width, chaser.height);
-        }
-
-        // Draw church at the goal
-        ctx.drawImage(church, 750, 250, 50, 100);
-    }
-
-    function gameLoop() {
-        update();
-        requestAnimationFrame(gameLoop);
-    }
-
-    gameLoop();
 });
+
+gameLoop();
