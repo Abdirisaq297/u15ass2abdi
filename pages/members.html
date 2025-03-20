@@ -1,37 +1,63 @@
-<html>
-  <head>
-    <title>Slovak Community Centre</title>
-    <meta charaset="UTF-8">
-    <meta name="viewpoint" content="width=device-width, initial-scale=1.0">
-    <link href="css/styles.css"rel="stylesheet">
-  </head>
-  <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membership - Slovak Community Charity</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
     <header>
-      <h1><u>Slovak Community Centre</u></h1>
-      <img src="images/slovakia.png" alt="Logo" class="logo">
+        <h1>Become a Member</h1>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="aboutus.html">About Us</a></li>
+                <li><a href="courses.html">Courses</a></li>
+                <li><a href="educatuingames.html">Education Games</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="members.html">Membership</li>
+            </ul>
+        </nav>
     </header>
-    <nav>
-<a href="../index.html">Welcome</a>
-<a href="aboutus.html">About us</a>
-<a href="members.html">Members</a>
-<a href="courses.html">Courses</a>
-<a href="educatuingames.html">EducationGames</a>
-<a href="events.html">Events</a>
-  <main class= mainpage>
-    </nav>
-      <h2>membership</h3>
-      <p>buy our membership today to have access to all our online classes and have early access to exclusive events!</p>
-      <div class="sections">
-        <section class="section">
-          <h3> Membership
-            pass</h3>
-            <p> Buy this membership to have access to exculsive lessons</p>
-        </section>
-        <section class="section">
-        <h3> premium membership</h3>
-        <p> Access the premium membership to access lessons on Slovak history from celebrated professers.</p>
-        </section>
- </div>
-        </main>
-<footer>
-  <p>&copy; Abdirisaq websites all rights reserved</p></footer>
+
+    <section id="membership">
+        <h2>Why Join Us?</h2>
+        <p>By becoming a member, you gain access to exclusive events, free courses, and a supportive Slovak community in Manchester.</p>
+
+        <h3>Membership</h3>
+        <ul>
+            <li>Free access to language & job training courses</li>
+            <li>Invitations to community events</li>
+            <li>Degree level lingustic course of the development of the Slovak language.</li>
+            <li>Exclusive lessons from Slovak Professers</li>
+        </ul>
+
+        <h3>Sign Up Now</h3>
+        <form id="membership-form">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" name="phone" required>
+
+            <label for="message">Why do you want to join?</label>
+            <textarea id="message" name="message" rows="4" required></textarea>
+
+            <button type="submit">Join Now</button>
+        </form>
+
+        <p id="response-message"></p>
+    </section>
+
+    <footer>
+        <p>Contact us: info@slovakcharitymanchester.org</p>
+        <p>© 2025 Slovak Community Charity - Manchester</p>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>
