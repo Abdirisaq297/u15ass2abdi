@@ -1,59 +1,39 @@
-<html>
-  <head>
-    <title>Slovak Community Centre</title>
-    <meta charaset="UTF-8">
-    <meta name="viewpoint" content="width=device-width, initial-scale=1.0">
-    <link href="css/games.css"rel="stylesheet">
-  </head>
-  <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slovak Adventure Game</title>
+    <link rel="stylesheet" href="../game.css">
+</head>
+<body>
     <header>
-      <h1><u>Slovak Community Centre</u></h1>
-      <img src="images/slovakia.png" alt="Logo" class="logo">
+        <h1>Slovak Adventure - Escape to the Church!</h1>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="aboutus.html">About Us</a></li>
+                <li><a href="members.html">Members</a></li>
+                <li><a href="courses.html">Courses</a></li>
+                <li><a href="events.html">Events</a></li>
+            </ul>
+        </nav>
     </header>
-    <nav>
-<html>
-  <head>
-    <title>Slovak Community Centre</title>
-    <meta charaset="UTF-8">
-    <meta name="viewpoint" content="width=device-width, initial-scale=1.0">
-    <link href="css/style.css"rel="stylesheet">
-  </head>
-  <body>
-    <header>
-      <h1><u>Slovak Community Centre</u></h1>
-      <img src="images/slovakia.png" alt="Logo" class="logo">
-    </header>
-    <nav>
-<a href="../index.html">Welcome</a>
-<a href="aboutus.html">About us</a>
-<a href="members.html">Members</a>
-<a href="courses.html">Courses</a>
-<a href="educatuingames.html">EducationGames</a>
-<a href="events.html">Events</a>
-  <main class= mainpage>
-    </nav>
-      <h2> About us</h2>
-      <p> We are charity focusing on help the local slovak community in manchester. We started our charity from the fear that slovak famlies could lose connection to thier homeland through future genrations as britiain puts more piority on assmilating immigrants, it will take more effort to stop future slovak children from losing thier idenity and becoming britih people with slovak blood.</p>
-<footer>
-  <p>&copy; Abdirisaq websites all rights reserved</p></footer> 
-  <main class= mainpage>
-    </nav>
-      <h2>Games</h3>
-      <p>We offer a selection of games to play to make learning about the slovak identiy more exicting.</p>
-      <div class="sections">
-        <section class="section">
-          <h3> guess the figure</h3>
-          <p> Guess the notable figure in slovak history.</p>
-        </section>
-        <section class="section">
-          <h3> Complete the sectence</h3>
-          <p> Test your fluency in the slovak language by filling in uncompleted solvak scentences.</p>
-        </section>
-         <section class="section">
-           <h3> Guess the song</h3>
-           <p> Guess what traditonal Slovak is being played</p>
-        </section>
- </div>
-        </main>
-<footer>
-  <p>&copy; Abdirisaq websites all rights reserved</p></footer>
+
+    <section id="game-container">
+        <canvas id="gameCanvas"></canvas>
+    </section>
+
+    <footer>
+        <p>Contact us: info@slovakcharitymanchester.org</p>
+        <p>© 2025 Slovak Community Charity - Manchester</p>
+    </footer>
+
+    <audio id="background-music" loop>
+        <source src="../audio/all_together_now.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script src="../game.js"></script>
+</body>
+</html>
