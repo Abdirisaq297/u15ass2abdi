@@ -38,3 +38,15 @@ canvas {
     border: 2px solid black;
 }
 
+#score {
+    font-size: 20px;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+#message {
+    font-size: 18px;
+    color: red;
+    font-weight: bold;
+}
+
