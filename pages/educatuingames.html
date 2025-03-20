@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slovak Adventure Game</title>
+    <title>Slovak Charity Collector</title>
     <link rel="stylesheet" href="../game.css">
 </head>
 <body>
     <header>
-        <h1>Slovak Adventure - Escape to the Church!</h1>
+        <h1>Slovak Charity Collector</h1>
+        <p>Move the basket to collect donations for the community!</p>
         <nav>
             <ul>
                 <li><a href="../index.html">Home</a></li>
@@ -22,6 +23,8 @@
 
     <section id="game-container">
         <canvas id="gameCanvas"></canvas>
+        <p id="score">Score: 0</p>
+        <p id="message"></p>
     </section>
 
     <footer>
@@ -29,11 +32,7 @@
         <p>© 2025 Slovak Community Charity - Manchester</p>
     </footer>
 
-    <audio id="background-music" loop>
-        <source src="../audio/all_together_now.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-
     <script src="../game.js"></script>
 </body>
 </html>
+
