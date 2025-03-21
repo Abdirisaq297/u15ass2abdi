@@ -1,138 +1,113 @@
-const canvas = document.getElementById("myCanvas");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById("gameCanvas");
+const context = canvas.getContext("2d");
 
-// Ball
-let ballRadius = 10;
-let x = canvas.width / 2;
-let y = canvas.height - 30;
-let dx = 2;
-let dy = -2;
+const paddleWidth = 10, paddleHeight = 100;
+const ballRadius = 10;
+let upPressed = false, downPressed = false;
+let playerScore = 0, playerLives = 3;
 
-// Paddle
-const paddleHeight = 10;
-const paddleWidth = 75;
-let paddleX = (canvas.width - paddleWidth) / 2;
+const player = { x: 0, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 5 };
+const computer = { x: canvas.width - paddleWidth, y: canvas.height / 2 - paddleHeight / 2, width: paddleWidth, height: paddleHeight, dy: 5 };
+const ball = { x: canvas.width / 2, y: canvas.height / 2, radius: ballRadius, speed: 4, dx: 4, dy: 4 };
 
-// Controls
-let rightPressed = false;
-let leftPressed = false;
+function drawPaddle(x, y, width, height) {
+    context.fillStyle = "#FFF";
+    context.fillRect(x, y, width, height);
+}
 
-// Bricks
-const brickRowCount = 3;
-const brickColumnCount = 5;
-const brickWidth = 75;
-const brickHeight = 20;
-const brickPadding = 10;
-const brickOffsetTop = 30;
-const brickOffsetLeft = 30;
+function drawBall(x, y, radius) {
+    context.beginPath();
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    context.fillStyle = "#FFF";
+    context.fill();
+    context.closePath();
+}
 
-let bricks = [];
-for (let c = 0; c < brickColumnCount; c++) {
-    bricks[c] = [];
-    for (let r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = { x: 0, y: 0, status: 1 };
+function movePaddle(paddle) {
+    if (upPressed && paddle.y > 0) {
+        paddle.y -= paddle.dy;
+    } else if (downPressed && paddle.y < canvas.height - paddle.height) {
+        paddle.y += paddle.dy;
     }
 }
 
-// Event listeners for paddle controls
-document.addEventListener("keydown", keyDownHandler, false);
-document.addEventListener("keyup", keyUpHandler, false);
-
-function keyDownHandler(e) {
-    if (e.key == "Right" || e.key == "ArrowRight") {
-        rightPressed = true;
-    } else if (e.key == "Left" || e.key == "ArrowLeft") {
-        leftPressed = true;
+function moveComputerPaddle() {
+    if (ball.y < computer.y + computer.height / 2) {
+        computer.y -= computer.dy;
+    } else if (ball.y > computer.y + computer.height / 2) {
+        computer.y += computer.dy;
     }
 }
 
-function keyUpHandler(e) {
-    if (e.key == "Right" || e.key == "ArrowRight") {
-        rightPressed = false;
-    } else if (e.key == "Left" || e.key == "ArrowLeft") {
-        leftPressed = false;
+function moveBall() {
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+        ball.dy *= -1;
     }
-}
 
-// Drawing functions
-function drawBall() {
-    ctx.beginPath();
-    ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = "#0095DD";
-    ctx.fill();
-    ctx.closePath();
-}
+    if (ball.x - ball.radius < player.x + player.width && ball.y > player.y && ball.y < player.y + player.height) {
+        ball.dx *= -1;
+        playerScore++;
+        document.getElementById("score").innerText = "Score: " + playerScore;
+    } else if (ball.x + ball.radius > computer.x && ball.y > computer.y && ball.y < computer.y + computer.height) {
+        ball.dx *= -1;
+    }
 
-function drawPaddle() {
-    ctx.beginPath();
-    ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-    ctx.fillStyle = "#0095DD";
-    ctx.fill();
-    ctx.closePath();
-}
-
-function drawBricks() {
-    for (let c = 0; c < brickColumnCount; c++) {
-        for (let r = 0; r < brickRowCount; r++) {
-            if (bricks[c][r].status == 1) {
-                let brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-                let brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-                bricks[c][r].x = brickX;
-                bricks[c][r].y = brickY;
-                ctx.beginPath();
-                ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                ctx.fillStyle = "#0095DD";
-                ctx.fill();
-                ctx.closePath();
-            }
+    if (ball.x - ball.radius < 0) {
+        playerLives--;
+        if (playerLives === 0) {
+            document.getElementById("message").innerText = "Game Over";
+            document.location.reload();
+        } else {
+            resetBall();
         }
+    } else if (ball.x + ball.radius > canvas.width) {
+        ball.dx *= -1;
     }
 }
 
-function collisionDetection() {
-    for (let c = 0; c < brickColumnCount; c++) {
-        for (let r = 0; r < brickRowCount; r++) {
-            let b = bricks[c][r];
-            if (b.status == 1) {
-                if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
-                    dy = -dy;
-                    b.status = 0;
-                }
-            }
-        }
-    }
+function resetBall() {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.dx *= -1;
 }
 
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBricks();
-    drawBall();
-    drawPaddle();
-    collisionDetection();
-
-    if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-        dx = -dx;
-    }
-    if (y + dy < ballRadius) {
-        dy = -dy;
-    } else if (y + dy > canvas.height - ballRadius) {
-        if (x > paddleX && x < paddleX + paddleWidth) {
-            dy = -dy;
-        } else {
-            document.location.reload();
-        }
-    }
-
-    x += dx;
-    y += dy;
-
-    if (rightPressed && paddleX < canvas.width - paddleWidth) {
-        paddleX += 7;
-    } else if (leftPressed && paddleX > 0) {
-        paddleX -= 7;
-    }
-
-    requestAnimationFrame(draw);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    drawPaddle(player.x, player.y, player.width, player.height);
+    drawPaddle(computer.x, computer.y, computer.width, computer.height);
+    drawBall(ball.x, ball.y, ball.radius);
 }
 
-draw();
+function update() {
+    movePaddle(player);
+    moveComputerPaddle();
+    moveBall();
+}
+
+function gameLoop() {
+    draw();
+    update();
+    requestAnimationFrame(gameLoop);
+}
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowUp") {
+        upPressed = true;
+    } else if (event.key === "ArrowDown") {
+        downPressed = true;
+    }
+});
+
+document.addEventListener("keyup", (event) => {
+    if (event.key === "ArrowUp") {
+        upPressed = false;
+    } else if (event.key === "ArrowDown") {
+        downPressed = false;
+    }
+});
+
+gameLoop();
+
